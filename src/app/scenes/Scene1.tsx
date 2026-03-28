@@ -2,16 +2,25 @@ import { motion } from 'motion/react';
 import svgPaths from '../../imports/svg-r2pv384azv';
 import imgTitle1 from '../../assets/a16a85855a3bb3af39a3f72babdcda2905687e67.png';
 import { bobbingAnimation } from '../animations/variants';
+import { GradientBackground } from '../components/scene-elements';
 import { COLORS } from '../constants';
 
-export function Scene1() {
+export function Scene1({ skyGradient, enableGlobalGradient = false }) {
   return (
     <div className="bg-white relative size-full" data-name="Scene 1">
-      {/* Turquoise background */}
-      <div 
-        className="absolute h-full left-0 top-0 w-full" 
-        style={{ backgroundColor: COLORS.turquoise }}
-      />
+      {enableGlobalGradient ? (
+        <GradientBackground
+          gradient={skyGradient}
+          animate
+          backgroundSize="100% 300%"
+          backgroundPosition="50% 0%"
+        />
+      ) : (
+        <div
+          className="absolute h-full left-0 top-0 w-full"
+          style={{ backgroundColor: COLORS.turquoise }}
+        />
+      )}
       
       {/* Title image */}
       <div className="-translate-x-1/2 absolute h-[317px] left-[calc(50%-0.5px)] top-[341px] w-[1432px]" data-name="Title 1">

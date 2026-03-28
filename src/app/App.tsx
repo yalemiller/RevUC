@@ -5,6 +5,7 @@ import { ParallaxPerson } from './components/ParallaxPerson';
 import { FixedFoodBlocks } from './components/FixedFoodBlocks';
 import { useScrollSnap } from './hooks/useScrollSnap';
 import { useScrollProgress } from './hooks/useScrollProgress';
+import { SCENE_3_STEPS } from './constants';
 import {
   Scene1,
   Scene2,
@@ -23,6 +24,8 @@ export default function App() {
   const [scene3Complete, setScene3Complete] = useState(false);
   const [enteredFoods, setEnteredFoods] = useState([]);
   const [currentFoodIndex, setCurrentFoodIndex] = useState(0);
+  const [skyGradient, setSkyGradient] = useState(SCENE_3_STEPS[0].gradient);
+  const [hasFeedingStarted, setHasFeedingStarted] = useState(false);
 
   const { containerRef, currentScene, scrollToScene } = useScrollSnap({
     totalScenes: TOTAL_SCENES,
@@ -46,11 +49,16 @@ export default function App() {
         currentScene={currentSceneIndex}
       >
         <SceneWrapper sceneNumber={1}>
-          <Scene1 />
+          <Scene1 skyGradient={skyGradient} enableGlobalGradient={hasFeedingStarted} />
         </SceneWrapper>
         
         <SceneWrapper sceneNumber={2}>
-          <Scene2 currentScene={currentSceneIndex} totalScenes={TOTAL_SCENES} />
+          <Scene2
+            currentScene={currentSceneIndex}
+            totalScenes={TOTAL_SCENES}
+            skyGradient={skyGradient}
+            enableGlobalGradient={hasFeedingStarted}
+          />
         </SceneWrapper>
         
         <SceneWrapper sceneNumber={3}>
@@ -58,7 +66,11 @@ export default function App() {
             currentScene={currentSceneIndex} 
             totalScenes={TOTAL_SCENES}
             onComplete={() => setScene3Complete(true)}
-            onFoodsEntered={(foods) => setEnteredFoods(foods)}
+            onFoodsEntered={(foods) => {
+              setEnteredFoods(foods);
+              if (foods.length > 0) setHasFeedingStarted(true);
+            }}
+            onSkyGradientChange={setSkyGradient}
           />
         </SceneWrapper>
         

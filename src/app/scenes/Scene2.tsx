@@ -1,16 +1,25 @@
 import { motion } from 'motion/react';
 import { SceneProgressIndicator } from '../components/SceneProgressIndicator';
 import { headlineAnimation } from '../animations/variants';
+import { GradientBackground } from '../components/scene-elements';
 import { COLORS } from '../constants';
 
-export function Scene2({ currentScene = 1, totalScenes = 8 }) {
+export function Scene2({ currentScene = 1, totalScenes = 8, skyGradient, enableGlobalGradient = false }) {
   return (
     <div className="bg-white relative size-full" data-name="Scene 2">
-      {/* Turquoise background */}
-      <div 
-        className="absolute h-full left-0 top-0 w-full" 
-        style={{ backgroundColor: COLORS.turquoise }}
-      />
+      {enableGlobalGradient ? (
+        <GradientBackground
+          gradient={skyGradient}
+          animate
+          backgroundSize="100% 300%"
+          backgroundPosition="50% 50%"
+        />
+      ) : (
+        <div
+          className="absolute h-full left-0 top-0 w-full"
+          style={{ backgroundColor: COLORS.turquoise }}
+        />
+      )}
       
       {/* Person is now rendered by ParallaxPerson overlay - removed from here */}
       
