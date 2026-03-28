@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import imgChest1 from 'figma:asset/30a91495dceb6d7fc18038e42fb8026c7916a513.png';
+import imgChest1 from '../../assets/30a91495dceb6d7fc18038e42fb8026c7916a513.png';
 
 /**
  * ParallaxPerson - ONE person image as a fixed overlay spanning scenes 2-4.

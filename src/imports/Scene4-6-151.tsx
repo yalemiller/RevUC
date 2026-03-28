@@ -1,4 +1,4 @@
-import imgChest1 from "figma:asset/30a91495dceb6d7fc18038e42fb8026c7916a513.png";
+import imgChest1 from "../assets/30a91495dceb6d7fc18038e42fb8026c7916a513.png";
 
 export default function Scene() {
   return (

@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import imgBag1 from "figma:asset/161e525cc32e6c36fdb23b7da795dc9faee62f01.png";
+import imgBag1 from "../../assets/161e525cc32e6c36fdb23b7da795dc9faee62f01.png";
 import { SceneProgressIndicator } from '../components/SceneProgressIndicator';
 
 export function Scene6({ currentScene = 5, totalScenes = 8, scrollProgress = 5 }) {

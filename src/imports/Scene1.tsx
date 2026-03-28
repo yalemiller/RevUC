@@ -1,5 +1,5 @@
 import svgPaths from "./svg-r2pv384azv";
-import imgTitle1 from "figma:asset/a16a85855a3bb3af39a3f72babdcda2905687e67.png";
+import imgTitle1 from "../assets/a16a85855a3bb3af39a3f72babdcda2905687e67.png";
 
 export default function Scene() {
   return (

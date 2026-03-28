@@ -1,4 +1,4 @@
-import imgBag1 from "figma:asset/161e525cc32e6c36fdb23b7da795dc9faee62f01.png";
+import imgBag1 from "../assets/161e525cc32e6c36fdb23b7da795dc9faee62f01.png";
 
 export default function Scene() {
   return (

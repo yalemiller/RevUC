@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import imgChest1 from 'figma:asset/30a91495dceb6d7fc18038e42fb8026c7916a513.png';
+import imgChest1 from '../../assets/30a91495dceb6d7fc18038e42fb8026c7916a513.png';
 import { calculateStomachPosition } from '../utils/positionHelpers';
 import { SCENE_3_CONFIG } from '../constants';
 
