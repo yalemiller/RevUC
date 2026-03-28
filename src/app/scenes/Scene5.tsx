@@ -22,8 +22,8 @@ export function Scene5({ currentScene = 4, totalScenes = 8, scrollProgress = 4 }
       <div 
         className="absolute"
         style={{
-          right: '0vw',
-          top: '-2.4vh',
+          right: '4vw',
+          top: '1vh',
           width: '33vw',
           height: '100.3vh',
         }}

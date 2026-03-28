@@ -22,10 +22,11 @@ export function Scene6({ currentScene = 5, totalScenes = 8, scrollProgress = 5 }
       <div 
         className="absolute"
         style={{
-          right: '0vw',
-          top: '18.5vh',
+          right: '2vw',
+          top: '20.5vh',
           width: '36vw',
           height: '65.5vh',
+          zIndex: 10,
         }}
         data-name="Bag 1"
       >
