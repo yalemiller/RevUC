@@ -16,17 +16,18 @@ import imgChest1 from '../../assets/30a91495dceb6d7fc18038e42fb8026c7916a513.png
  * - widthVw: person size (affects height via aspect ratio)
  * - leftVw: horizontal position on screen
  * - startTopVh: where person top is at scene 2 (negative = head above viewport)
+ * - offsetUpPx: additional upward nudge in pixels (applied at all times)
  * - parallaxRate: 0.5 = person moves at half background speed
  * 
  * The person's stomach must align with FOOD_BLOCKS_POSITION in FixedFoodBlocks.
  * Stomach screen position = (startTopVh - parallaxRate*100) + 0.43 * imageHeightVh
- * At current values: -21 - 50 + 0.43*235 ≈ -71 + 101 = 30vh ✓
  */
 const PERSON_CONFIG = {
   widthVw: 35,
   leftVw: 63,
   startTopVh: -21,
-  parallaxRate: 0.5,
+  offsetUpPx: -150,
+  parallaxRate: .73,
 };
 
 export function ParallaxPerson({ scrollProgress }) {
@@ -57,7 +58,7 @@ export function ParallaxPerson({ scrollProgress }) {
     <div
       style={{
         position: 'fixed',
-        top: `${personTop}vh`,
+        top: `calc(${personTop}vh - ${PERSON_CONFIG.offsetUpPx}px)`,
         left: `${PERSON_CONFIG.leftVw}vw`,
         width: `${PERSON_CONFIG.widthVw}vw`,
         opacity,
