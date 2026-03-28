@@ -17,8 +17,8 @@ import { motion, AnimatePresence } from 'motion/react';
  * to align everything. Also adjust ParallaxPerson PERSON_CONFIG if stomach misaligns.
  */
 const FOOD_BLOCKS_POSITION = {
-  topVh: 35,            // Vertical position on screen
-  leftVw: 73.5,           // Horizontal position (aligns with person stomach)
+  topVh: 37,            // Vertical position on screen
+  leftVw: 72,           // Horizontal position (aligns with person stomach)
   widthVw: 15,          // Width of the block column
   blockHeightVh: 9.5,   // Height of each block
   gapVh: 1.75,           // Gap between blocks

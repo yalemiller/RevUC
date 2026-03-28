@@ -23,11 +23,11 @@ import imgChest1 from '../../assets/30a91495dceb6d7fc18038e42fb8026c7916a513.png
  * Stomach screen position = (startTopVh - parallaxRate*100) + 0.43 * imageHeightVh
  */
 const PERSON_CONFIG = {
-  widthVw: 35,
-  leftVw: 63,
-  startTopVh: -21,
+  widthVw: 44,
+  leftVw: 57,
+  startTopVh: -18,
   offsetUpPx: -150,
-  parallaxRate: .73,
+  parallaxRate: .93,
 };
 
 export function ParallaxPerson({ scrollProgress }) {

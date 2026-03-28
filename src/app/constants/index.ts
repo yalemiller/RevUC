@@ -82,7 +82,7 @@ export const SCENE_3_CONFIG = {
   personPosition: {
     left: '1150px',  // Moved right from 900px to 1150px (250px right)
     top: '-1080px',  // Changed from -1150px to -1080px for seamless Scene 2→3 transition
-    scale: 1.15,
+    scale: 1.5,
   },
   // Stomach position relative to person image (percentage-based for coupling)
   stomachRelativePosition: {
