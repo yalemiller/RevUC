@@ -13,6 +13,12 @@ export function Scene6({ currentScene = 5, totalScenes = 8, scrollProgress = 5 }
     return 0;
   }, [scrollProgress]);
 
+  const bagRiseProgress = useMemo(() => {
+    if (scrollProgress <= 4.58) return 0;
+    if (scrollProgress >= 5.04) return 1;
+    return (scrollProgress - 4.58) / 0.46;
+  }, [scrollProgress]);
+
   return (
     <div className="bg-[#c7e5f1] relative size-full" data-name="Scene 6">
       {/* Light blue background */}
@@ -27,6 +33,9 @@ export function Scene6({ currentScene = 5, totalScenes = 8, scrollProgress = 5 }
           width: '36vw',
           height: '65.5vh',
           zIndex: 10,
+          transform: `translateY(${(1 - bagRiseProgress) * 16}vh) scale(${0.92 + bagRiseProgress * 0.08})`,
+          transformOrigin: 'bottom center',
+          transition: 'transform 0.12s linear',
         }}
         data-name="Bag 1"
       >
@@ -39,13 +48,15 @@ export function Scene6({ currentScene = 5, totalScenes = 8, scrollProgress = 5 }
       
       {/* Main text - top (fades) */}
       <p 
-        className="absolute font-['Inter:Bold',sans-serif] font-bold leading-[normal] not-italic text-[#0f707f]"
+        className="fixed font-['Inter:Bold',sans-serif] font-bold leading-[normal] not-italic text-[#0f707f]"
         style={{
           left: '9.4vw',
           top: '20.7vh',
           width: '38.8vw',
           fontSize: 'clamp(22px, 2.9vw, 55px)',
           opacity: textOpacity,
+          zIndex: 12,
+          pointerEvents: 'none',
           transition: 'opacity 0.15s ease',
         }}
       >
@@ -54,13 +65,15 @@ export function Scene6({ currentScene = 5, totalScenes = 8, scrollProgress = 5 }
       
       {/* Price (fades) */}
       <p 
-        className="absolute font-['Inter:Bold',sans-serif] font-bold leading-[normal] not-italic text-[#0f707f]"
+        className="fixed font-['Inter:Bold',sans-serif] font-bold leading-[normal] not-italic text-[#0f707f]"
         style={{
           left: '9.4vw',
           top: '35.7vh',
           width: '47.2vw',
           fontSize: 'clamp(60px, 10.4vw, 200px)',
           opacity: textOpacity,
+          zIndex: 12,
+          pointerEvents: 'none',
           transition: 'opacity 0.15s ease',
         }}
       >
@@ -69,13 +82,15 @@ export function Scene6({ currentScene = 5, totalScenes = 8, scrollProgress = 5 }
       
       {/* Increase text (fades) */}
       <p 
-        className="absolute font-['Inter:Bold',sans-serif] font-bold leading-[normal] not-italic text-[#0f707f]"
+        className="fixed font-['Inter:Bold',sans-serif] font-bold leading-[normal] not-italic text-[#0f707f]"
         style={{
           left: '9.4vw',
           top: '58.6vh',
           width: '38.8vw',
           fontSize: 'clamp(22px, 2.9vw, 55px)',
           opacity: textOpacity,
+          zIndex: 12,
+          pointerEvents: 'none',
           transition: 'opacity 0.15s ease',
         }}
       >

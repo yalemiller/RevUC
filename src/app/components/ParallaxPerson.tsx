@@ -30,6 +30,8 @@ const PERSON_CONFIG = {
   parallaxRate: .93,
 };
 
+const PERSON_EXIT_PROGRESS = 4;
+
 export function ParallaxPerson({ scrollProgress }) {
   const personTop = useMemo(() => {
     if (scrollProgress <= 1) {
@@ -38,39 +40,61 @@ export function ParallaxPerson({ scrollProgress }) {
       // Scene 2→3: parallax at 0.5x
       const delta = scrollProgress - 1;
       return PERSON_CONFIG.startTopVh - delta * 100 * PERSON_CONFIG.parallaxRate;
-    } else {
-      // Scene 3→4+: person FIXED
+    } else if (scrollProgress <= 3) {
+      // Scenes 3-4: person remains fixed in place
       return PERSON_CONFIG.startTopVh - 100 * PERSON_CONFIG.parallaxRate;
+    } else if (scrollProgress < PERSON_EXIT_PROGRESS) {
+      // Scene 4→5 handoff: person exits upward with the scene (no fade)
+      const delta = scrollProgress - 3;
+      return PERSON_CONFIG.startTopVh - 100 * PERSON_CONFIG.parallaxRate - delta * 100;
+    } else {
+      // After handoff starts, keep far above viewport.
+      return -300;
     }
   }, [scrollProgress]);
 
   const opacity = useMemo(() => {
     if (scrollProgress < 0.7) return 0;
     if (scrollProgress < 1) return (scrollProgress - 0.7) / 0.3;
-    if (scrollProgress <= 3.3) return 1;
-    if (scrollProgress < 3.8) return 1 - (scrollProgress - 3.3) / 0.5;
-    return 0;
+    if (scrollProgress < PERSON_EXIT_PROGRESS) return 1;
+    return 1;
   }, [scrollProgress]);
 
-  if (opacity <= 0) return null;
+  // Scene 4 bottom edge mask:
+  // - full viewport up to Scene 4
+  // - shrinks upward during Scene 4→5 so content beyond boundary is clipped
+  const scene4MaskHeightVh = useMemo(() => {
+    if (scrollProgress <= 3) return 100;
+    if (scrollProgress < 4) return (4 - scrollProgress) * 100;
+    return 0;
+  }, [scrollProgress]);
 
   return (
     <div
       style={{
         position: 'fixed',
-        top: `calc(${personTop}vh - ${PERSON_CONFIG.offsetUpPx}px)`,
-        left: `${PERSON_CONFIG.leftVw}vw`,
-        width: `${PERSON_CONFIG.widthVw}vw`,
-        opacity,
+        inset: 0,
+        height: `${scene4MaskHeightVh}vh`,
+        overflow: 'hidden',
         zIndex: 4,
         pointerEvents: 'none',
       }}
     >
-      <img
-        src={imgChest1}
-        alt="Person illustration"
-        style={{ width: '100%', height: 'auto', display: 'block' }}
-      />
+      <div
+        style={{
+          position: 'absolute',
+          top: `calc(${personTop}vh - ${PERSON_CONFIG.offsetUpPx}px)`,
+          left: `${PERSON_CONFIG.leftVw}vw`,
+          width: `${PERSON_CONFIG.widthVw}vw`,
+          opacity,
+        }}
+      >
+        <img
+          src={imgChest1}
+          alt="Person illustration"
+          style={{ width: '100%', height: 'auto', display: 'block' }}
+        />
+      </div>
     </div>
   );
 }

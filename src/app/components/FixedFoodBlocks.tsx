@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 
+const OVERLAP_COMPLETE_PROGRESS = 5.02;
+
 /**
  * FixedFoodBlocks - ONE set of food blocks that persists from scene 3 through scene 6.
  * 
@@ -38,7 +40,20 @@ export function FixedFoodBlocks({ scrollProgress, foods = [], currentFoodIndex =
     return 0;
   }, [scrollProgress, foods.length]);
 
-  if (opacity <= 0 || foods.length === 0) return null;
+  // Scene 5 -> 6: collapse blocks into the bag opening area.
+  const vacuumProgress = useMemo(() => {
+    if (scrollProgress <= 4.62) return 0;
+    if (scrollProgress >= OVERLAP_COMPLETE_PROGRESS) return 1;
+    return (scrollProgress - 4.62) / 0.5;
+  }, [scrollProgress]);
+
+  const transitionOpacity = useMemo(() => {
+    if (scrollProgress <= 4.62) return 1;
+    if (scrollProgress >= OVERLAP_COMPLETE_PROGRESS) return 0;
+    return 1 - ((scrollProgress - 4.62) / (OVERLAP_COMPLETE_PROGRESS - 4.62));
+  }, [scrollProgress]);
+
+  if (opacity <= 0 || foods.length === 0 || scrollProgress >= OVERLAP_COMPLETE_PROGRESS) return null;
 
   return (
     <div
@@ -50,8 +65,10 @@ export function FixedFoodBlocks({ scrollProgress, foods = [], currentFoodIndex =
         display: 'flex',
         flexDirection: 'column',
         gap: `${FOOD_BLOCKS_POSITION.gapVh}vh`,
-        opacity,
-        zIndex: 6,
+        opacity: opacity * transitionOpacity,
+        transform: `scale(${1 - vacuumProgress * 0.8})`,
+        transformOrigin: 'center center',
+        zIndex: 9,
         pointerEvents: 'none',
       }}
     >
