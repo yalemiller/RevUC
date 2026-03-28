@@ -46,8 +46,8 @@ export const SCENE_3_STEPS = [
   {
     id: 1,
     prompt: "I start my morning off with...",
-    gradient: `linear-gradient(180deg, #87CEEB 0%, #FFB347 100%)`, // Sky blue to warm orange (sunrise)
-    sunPosition: { left: '74px', top: '725px' },
+    gradient: `linear-gradient(180deg, #2ea3bd 0%, #FFB347 100%)`, // Sky blue to warm orange (sunrise)
+    sunPosition: { left: '74px', top: '300px' },
     timeOfDay: 'morning',
   },
   {
@@ -135,8 +135,8 @@ export const DIMENSIONS = {
     radius: 152.5,
   },
   ground: {
-    height: '604px',
-    width: '2617px',
+    height: '1004px',
+    width: '3617px',
     radiusX: 1308.5,
     radiusY: 302,
   },

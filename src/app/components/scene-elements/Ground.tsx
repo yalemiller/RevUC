@@ -9,7 +9,7 @@ import { COLORS, DIMENSIONS } from '../../constants';
 export const Ground = memo(function Ground() {
   return (
     <div
-      className="-translate-x-1/2 absolute left-1/2 top-[772px]"
+      className="-translate-x-1/2 absolute left-1/2 top-[850px]"
       style={{
         height: DIMENSIONS.ground.height,
         width: DIMENSIONS.ground.width,
