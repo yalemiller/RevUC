@@ -3,7 +3,7 @@ import { motion } from 'motion/react';
 import { SceneProgressIndicator } from '../components/SceneProgressIndicator';
 import { getFoodByName } from '../utils/foodValidation';
 
-const imgChest1 = new URL('../../assets/30a91495dceb6d7fc18038e42fb8026c7916a513.png', import.meta.url).href;
+
 
 const SNAP_IDLE_DELAY_MS = 120;
 const SNAP_LOCK_MS = 280;
@@ -367,32 +367,6 @@ export function Scene8({ currentScene = 7, totalScenes = 9, enteredFoods = [] }:
 
   return (
     <div className="w-full h-screen relative overflow-hidden bg-[#2ea3bd]" data-name="Scene 8">
-      <div className="absolute left-[99px] top-[-996px] w-[797px] h-[3010px] pointer-events-none z-0">
-        <div className="-scale-y-100 rotate-180 w-full h-full">
-          <img alt="" className="w-full h-full object-cover pointer-events-none" src={imgChest1} />
-        </div>
-      </div>
-
-      {foods.map((food, idx) => {
-        const topPos = 312 + idx * 138;
-        const isActive = idx === activeIndex;
-
-        return (
-          <div key={`${food.id}-${idx}`} className="z-10">
-            <div
-              className={`absolute h-[114px] left-[322px] rounded-[25px] w-[325px] ${isActive ? 'bg-[#47c6da]' : 'bg-[#47c6da] opacity-50'}`}
-              style={{ top: `${topPos}px` }}
-            />
-            <p
-              className={`-translate-x-1/2 absolute font-['Inter:Bold',sans-serif] font-bold h-[70px] leading-[normal] left-[484.5px] not-italic text-[55px] text-center text-white ${isActive ? '' : 'opacity-50'}`}
-              style={{ top: `${topPos + 22}px` }}
-            >
-              {food.name}
-            </p>
-          </div>
-        );
-      })}
-
       <div
         ref={scrollContainerRef}
         data-scroll-cards

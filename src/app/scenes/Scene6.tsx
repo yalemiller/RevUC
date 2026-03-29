@@ -33,7 +33,7 @@ export function Scene6({ currentScene = 5, totalScenes = 8, scrollProgress = 5 }
           top: '20.5vh',
           width: '36vw',
           height: '65.5vh',
-          zIndex: 10,
+          zIndex: 11, // raised above food blocks (which are zIndex 5 during vacuum)
           transform: `translateY(${(1 - bagRiseProgress) * 16}vh) scale(${0.92 + bagRiseProgress * 0.08})`,
           transformOrigin: 'bottom center',
           transition: 'transform 0.12s linear',

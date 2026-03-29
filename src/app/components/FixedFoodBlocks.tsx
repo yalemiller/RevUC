@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'motion/react';
 const OVERLAP_COMPLETE_PROGRESS = 5.02;
 
 /**
- * FixedFoodBlocks - ONE set of food blocks that persists from scene 3 through scene 6.
+ * FixedFoodBlocks - Food blocks that persist from scene 3 through scene 6.
  * 
  * These blocks are at a FIXED screen position. They never move.
  * The world scrolls around them:
@@ -27,16 +27,14 @@ const FOOD_BLOCKS_POSITION = {
 };
 
 export function FixedFoodBlocks({ scrollProgress, foods = [], currentFoodIndex = -1 }) {
-  // Visible from scene 3 (when foods start appearing) through scene 6
-  // Fade in during scene 3, persist through scene 6, fade out after
+  // Visible from scene 3 through scene 6 only.
   const opacity = useMemo(() => {
     // Don't show if no foods
     if (foods.length === 0) return 0;
-    // Fade in: once foods exist (during scene 3), always visible
     if (scrollProgress < 1.8) return 0;
     if (scrollProgress < 2.1) return (scrollProgress - 1.8) / 0.3;
-    if (scrollProgress <= 5.5) return 1;
-    if (scrollProgress < 6) return 1 - (scrollProgress - 5.5) / 0.5;
+    if (scrollProgress <= 5.8) return 1;
+    if (scrollProgress < 6.2) return 1 - (scrollProgress - 5.8) / 0.4;
     return 0;
   }, [scrollProgress, foods.length]);
 
@@ -49,11 +47,13 @@ export function FixedFoodBlocks({ scrollProgress, foods = [], currentFoodIndex =
 
   const transitionOpacity = useMemo(() => {
     if (scrollProgress <= 4.62) return 1;
-    if (scrollProgress >= OVERLAP_COMPLETE_PROGRESS) return 0;
-    return 1 - ((scrollProgress - 4.62) / (OVERLAP_COMPLETE_PROGRESS - 4.62));
+    if (scrollProgress >= 6) return 0; // food fades after scene 6 fully complete
+    if (scrollProgress >= OVERLAP_COMPLETE_PROGRESS) return 1 - ((scrollProgress - OVERLAP_COMPLETE_PROGRESS) / (6 - OVERLAP_COMPLETE_PROGRESS));
+    return 1;
   }, [scrollProgress]);
 
-  if (opacity <= 0 || foods.length === 0 || scrollProgress >= OVERLAP_COMPLETE_PROGRESS) return null;
+  // Stop rendering if no opacity or no foods.
+  if (opacity <= 0 || foods.length === 0) return null;
 
   return (
     <div
@@ -68,7 +68,7 @@ export function FixedFoodBlocks({ scrollProgress, foods = [], currentFoodIndex =
         opacity: opacity * transitionOpacity,
         transform: `scale(${1 - vacuumProgress * 0.8})`,
         transformOrigin: 'center center',
-        zIndex: 9,
+        zIndex: vacuumProgress > 0 && scrollProgress < 6 ? 5 : 10, // behind bag during vacuum (Scene 6), in front otherwise
         pointerEvents: 'none',
       }}
     >

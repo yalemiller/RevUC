@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ScrollContainer } from './components/ScrollContainer';
 import { SceneWrapper } from './components/SceneWrapper';
 import { ParallaxPerson } from './components/ParallaxPerson';
+import { ParallaxPerson79 } from './components/ParallaxPerson79';
 import { FixedFoodBlocks } from './components/FixedFoodBlocks';
 import { useScrollSnap } from './hooks/useScrollSnap';
 import { useScrollProgress } from './hooks/useScrollProgress';
@@ -120,6 +121,13 @@ export default function App() {
       {/* Parallax Person - image only, scenes 2-4 */}
       <ParallaxPerson scrollProgress={scrollProgress} />
 
+      {/* Parallax Person 2 - image only, scenes 7-9 (mirrored, lower vantage) */}
+      <ParallaxPerson79
+        scrollProgress={scrollProgress}
+        foods={enteredFoods}
+        currentFoodIndex={currentSceneIndex === 7 ? currentFoodIndex : -1}
+      />
+
       {/* Fixed Food Blocks - ONE persistent element from scene 3 through 6 */}
       {/* Aligns with person stomach (3-4), receipt items (5), bag opening (6) */}
       <FixedFoodBlocks 
@@ -127,6 +135,7 @@ export default function App() {
         foods={enteredFoods}
         currentFoodIndex={currentSceneIndex === 3 ? currentFoodIndex : -1}
       />
+
     </>
   );
 }
