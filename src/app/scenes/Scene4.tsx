@@ -2,9 +2,47 @@ import { useState, useMemo, useRef, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { getFoodByName } from '../utils/foodValidation';
 
+const SNAP_IDLE_DELAY_MS = 120;
+const SNAP_LOCK_MS = 280;
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(Math.max(value, min), max);
+}
+
+function getScrollMetrics(container: HTMLDivElement) {
+  const cards = container.querySelectorAll('[data-scroll-card]') as NodeListOf<HTMLDivElement>;
+  const firstCard = cards[0];
+
+  if (!firstCard) {
+    return {
+      baseOffset: 0,
+      stride: container.offsetWidth,
+      maxLeft: Math.max(0, container.scrollWidth - container.clientWidth),
+    };
+  }
+
+  const secondCard = cards[1];
+  const fallbackStride = firstCard.offsetWidth;
+  const stride = secondCard ? secondCard.offsetLeft - firstCard.offsetLeft : fallbackStride;
+
+  return {
+    baseOffset: firstCard.offsetLeft,
+    stride,
+    maxLeft: Math.max(0, container.scrollWidth - container.clientWidth),
+  };
+}
+
 export function Scene4({ currentScene = 3, totalScenes = 8, enteredFoods = [], onFoodIndexChange }) {
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+  const snapTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const snapLockTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const rafRef = useRef<number | null>(null);
+  const lastScrollLeftRef = useRef(0);
+  const lastScrollTsRef = useRef(0);
+  const velocityRef = useRef(0);
+  const isSnappingRef = useRef(false);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [scrollProgress, setScrollProgress] = useState(0);
 
   const foodDataList = useMemo(() => {
     return enteredFoods.map((foodName) => {
@@ -27,39 +65,113 @@ export function Scene4({ currentScene = 3, totalScenes = 8, enteredFoods = [], o
     });
   }, [enteredFoods]);
 
+  const emitActiveIndex = (newIndex: number, totalItems: number) => {
+    if (newIndex < 0 || newIndex >= totalItems) return;
+
+    setActiveIndex((previous) => {
+      if (previous !== newIndex) {
+        onFoodIndexChange?.(newIndex);
+      }
+      return newIndex;
+    });
+  };
+
   useEffect(() => {
     const container = scrollContainerRef.current;
     if (!container) return;
 
-    let scrollTimeout: ReturnType<typeof setTimeout> | null = null;
+    const updateProgress = (nextProgress: number) => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      rafRef.current = requestAnimationFrame(() => {
+        setScrollProgress(nextProgress);
+      });
+    };
+
+    const snapToIndex = (index: number) => {
+      const { baseOffset, stride, maxLeft } = getScrollMetrics(container);
+      const boundedIndex = clamp(index, 0, Math.max(foodDataList.length - 1, 0));
+      const targetLeft = clamp(baseOffset + boundedIndex * stride, 0, maxLeft);
+
+      isSnappingRef.current = true;
+      container.scrollTo({
+        left: targetLeft,
+        behavior: 'smooth',
+      });
+
+      emitActiveIndex(boundedIndex, foodDataList.length);
+      updateProgress(boundedIndex);
+
+      if (snapLockTimeoutRef.current) clearTimeout(snapLockTimeoutRef.current);
+      snapLockTimeoutRef.current = setTimeout(() => {
+        isSnappingRef.current = false;
+      }, SNAP_LOCK_MS);
+    };
+
+    const calculateTargetIndex = (rawIndex: number) => {
+      // Add momentum projection to make the snap feel magnetized and decisive.
+      const velocity = velocityRef.current;
+      const projectedIndex = rawIndex + clamp(velocity * 0.22, -0.35, 0.35);
+      const boundedProjected = clamp(projectedIndex, 0, Math.max(foodDataList.length - 1, 0));
+      return Math.round(boundedProjected);
+    };
 
     const handleScroll = () => {
-      if (scrollTimeout) clearTimeout(scrollTimeout);
+      const now = performance.now();
+      const { baseOffset, stride } = getScrollMetrics(container);
+      const currentLeft = container.scrollLeft;
+      const rawIndex = (currentLeft - baseOffset) / stride;
 
-      scrollTimeout = setTimeout(() => {
-        const cardWidth = container.offsetWidth * 0.94;
-        const rawIndex = container.scrollLeft / cardWidth;
-        const newIndex = Math.round(rawIndex);
+      const dt = now - lastScrollTsRef.current;
+      if (dt > 0) {
+        const delta = currentLeft - lastScrollLeftRef.current;
+        velocityRef.current = delta / dt;
+      }
 
-        if (newIndex !== activeIndex && newIndex >= 0 && newIndex < foodDataList.length) {
-          setActiveIndex(newIndex);
-          onFoodIndexChange?.(newIndex);
-        }
+      lastScrollLeftRef.current = currentLeft;
+      lastScrollTsRef.current = now;
 
-        container.scrollTo({
-          left: newIndex * cardWidth,
-          behavior: 'smooth',
-        });
-      }, 90);
+      const nearestIndex = Math.round(rawIndex);
+      emitActiveIndex(nearestIndex, foodDataList.length);
+      updateProgress(rawIndex);
+
+      if (isSnappingRef.current) return;
+      if (snapTimeoutRef.current) clearTimeout(snapTimeoutRef.current);
+
+      snapTimeoutRef.current = setTimeout(() => {
+        const targetIndex = calculateTargetIndex(rawIndex);
+        snapToIndex(targetIndex);
+      }, SNAP_IDLE_DELAY_MS);
     };
+
+    const { baseOffset, stride } = getScrollMetrics(container);
+    const startingIndex = clamp(
+      Math.round((container.scrollLeft - baseOffset) / stride),
+      0,
+      Math.max(foodDataList.length - 1, 0),
+    );
+    emitActiveIndex(startingIndex, foodDataList.length);
+    setScrollProgress(startingIndex);
 
     container.addEventListener('scroll', handleScroll, { passive: true });
 
     return () => {
-      if (scrollTimeout) clearTimeout(scrollTimeout);
+      if (snapTimeoutRef.current) clearTimeout(snapTimeoutRef.current);
+      if (snapLockTimeoutRef.current) clearTimeout(snapLockTimeoutRef.current);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
       container.removeEventListener('scroll', handleScroll);
     };
-  }, [activeIndex, foodDataList.length, onFoodIndexChange]);
+  }, [foodDataList.length, onFoodIndexChange]);
+
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const { baseOffset, stride, maxLeft } = getScrollMetrics(container);
+    const bounded = clamp(activeIndex, 0, Math.max(foodDataList.length - 1, 0));
+    const targetLeft = clamp(baseOffset + bounded * stride, 0, maxLeft);
+    container.scrollTo({ left: targetLeft, behavior: 'auto' });
+    setScrollProgress(bounded);
+  }, [foodDataList.length]);
 
   const getRiskLevelText = (riskLevel: string) => {
     const levels: Record<string, string> = {
@@ -112,8 +224,9 @@ export function Scene4({ currentScene = 3, totalScenes = 8, enteredFoods = [], o
           scrollbarWidth: 'none',
           msOverflowStyle: 'none',
           paddingLeft: '1.2vw',
-          paddingRight: '1.2vw',
+          paddingRight: '3vw',
           gap: '1.6vw',
+          zIndex: 2,
         }}
       >
         <style>{`
@@ -131,27 +244,46 @@ export function Scene4({ currentScene = 3, totalScenes = 8, enteredFoods = [], o
           const maxPrice = Math.max(50, (food.cost?.predictedAvg || 50) * 1.2);
           const currentBarHeight = ((food.cost?.currentAvg || 0) / maxPrice) * 54;
           const projectedBarHeight = ((food.cost?.predictedAvg || 0) / maxPrice) * 54;
+          const stackDistance = clamp(index - scrollProgress, -2.5, 2.5);
+          const depth = Math.abs(stackDistance);
+          const cardScale = 1 - depth * 0.08;
+          const cardRotate = stackDistance * -6;
+          const cardX = stackDistance * 34;
+          const cardY = depth * 18;
+          const cardOpacity = 1 - depth * 0.2;
+          const cardShadow = `0 ${14 + depth * 6}px ${38 + depth * 8}px rgba(0,0,0,${0.22 - depth * 0.03})`;
 
           return (
             <div
               key={`card-${index}`}
+              data-scroll-card
               className="flex-shrink-0"
               style={{
                 scrollSnapAlign: 'start',
                 width: '58vw',
                 height: '88vh',
                 padding: '0.7vw',
+                position: 'relative',
+                zIndex: Math.round(100 - depth * 10),
               }}
             >
               <motion.div
                 initial={{ opacity: 0, x: -30 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.4, delay: index * 0.08 }}
+                animate={{
+                  opacity: cardOpacity,
+                  x: cardX,
+                  y: cardY,
+                  scale: cardScale,
+                  rotate: cardRotate,
+                }}
+                transition={{ type: 'spring', stiffness: 220, damping: 24, mass: 0.7 }}
                 className="bg-[#47c6da] rounded-[1.8vw] relative"
                 style={{
                   width: '100%',
                   height: '100%',
                   padding: '2.2vh 2vw',
+                  boxShadow: cardShadow,
+                  transformOrigin: 'center center',
                 }}
               >
                 <p
@@ -337,11 +469,17 @@ export function Scene4({ currentScene = 3, totalScenes = 8, enteredFoods = [], o
             </div>
           );
         })}
+
+        <div
+          aria-hidden
+          className="flex-shrink-0"
+          style={{ width: '10vw', height: '1px' }}
+        />
       </div>
 
       <div
         className="absolute flex gap-[0.5vw]"
-        style={{ bottom: '3vh', left: '50%', transform: 'translateX(-50%)' }}
+        style={{ bottom: '3vh', left: '50%', transform: 'translateX(-50%)', zIndex: 2 }}
       >
         {foodDataList.map((_, i) => (
           <div
