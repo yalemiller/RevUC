@@ -1,6 +1,7 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { getFoodByName } from '../utils/foodValidation';
+import { appContent } from '../data/appContent';
 
 const SNAP_IDLE_DELAY_MS = 120;
 const SNAP_LOCK_MS = 280;
@@ -33,6 +34,7 @@ function getScrollMetrics(container: HTMLDivElement) {
 }
 
 export function Scene4({ currentScene = 3, totalScenes = 8, enteredFoods = [], onFoodIndexChange }) {
+  const scene4Content = appContent.scenes.scene4;
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   const snapTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const snapLockTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -49,21 +51,23 @@ export function Scene4({ currentScene = 3, totalScenes = 8, enteredFoods = [], o
       const foodData = getFoodByName(foodName);
       if (foodData) return foodData;
 
+      const fallback = scene4Content.fallbackFood;
+
       return {
         name: foodName,
-        categories: ['other'],
-        riskLevel: 'moderate',
-        vulnerabilityScore: 50,
-        primaryThreat: 'Climate change',
+        categories: [...fallback.categories],
+        riskLevel: fallback.riskLevel,
+        vulnerabilityScore: fallback.vulnerabilityScore,
+        primaryThreat: fallback.primaryThreat,
         cost: {
-          currentAvg: 5.0,
-          predictedAvg: 10.0,
-          currency: 'USD',
-          unit: 'lb',
+          currentAvg: fallback.cost.currentAvg,
+          predictedAvg: fallback.cost.predictedAvg,
+          currency: fallback.cost.currency,
+          unit: fallback.cost.unit,
         },
       };
     });
-  }, [enteredFoods]);
+  }, [enteredFoods, scene4Content.fallbackFood]);
 
   const emitActiveIndex = (newIndex: number, totalItems: number) => {
     if (newIndex < 0 || newIndex >= totalItems) return;
@@ -174,36 +178,19 @@ export function Scene4({ currentScene = 3, totalScenes = 8, enteredFoods = [], o
   }, [foodDataList.length]);
 
   const getRiskLevelText = (riskLevel: string) => {
-    const levels: Record<string, string> = {
-      critical: 'CRITICAL',
-      major: 'MAJOR',
-      moderate: 'MODERATE',
-      low: 'LOW',
-    };
-    return levels[riskLevel] || 'MODERATE';
+    return scene4Content.riskLevelLabels[riskLevel] || scene4Content.riskLevelLabels.moderate;
   };
 
   const getCategoryName = (categories: string[]) => {
-    if (!categories || categories.length === 0) return 'Food';
-
-    const map: Record<string, string> = {
-      seafood: 'Seafood',
-      fruit: 'Fruit',
-      grains: 'Grains',
-      poultry: 'Poultry',
-      dairy: 'Dairy',
-      vegetable: 'Vegetable',
-      other: 'Food',
-    };
-
-    return map[categories[0]] || 'Food';
+    if (!categories || categories.length === 0) return scene4Content.categoryLabels.other;
+    return scene4Content.categoryLabels[categories[0]] || scene4Content.categoryLabels.other;
   };
 
   if (foodDataList.length === 0) {
     return (
       <div className="bg-white relative size-full overflow-hidden">
         <div className="absolute inset-0 flex items-center justify-center">
-          <p className="text-2xl text-gray-500">No food data available</p>
+          <p className="text-2xl text-gray-500">{scene4Content.emptyStateText}</p>
         </div>
       </div>
     );
@@ -241,7 +228,7 @@ export function Scene4({ currentScene = 3, totalScenes = 8, enteredFoods = [], o
         `}</style>
 
         {foodDataList.map((food, index) => {
-          const maxPrice = Math.max(50, (food.cost?.predictedAvg || 50) * 1.2);
+          const maxPrice = Math.max(scene4Content.priceChart.maxScaleFloor, (food.cost?.predictedAvg || 50) * 1.2);
           const currentBarHeight = ((food.cost?.currentAvg || 0) / maxPrice) * 54;
           const projectedBarHeight = ((food.cost?.predictedAvg || 0) / maxPrice) * 54;
           const stackDistance = clamp(index - scrollProgress, -2.5, 2.5);
@@ -446,7 +433,7 @@ export function Scene4({ currentScene = 3, totalScenes = 8, enteredFoods = [], o
                       className="absolute font-['Inter:Extra_Bold',sans-serif] font-extrabold text-[#d0d0d0]"
                       style={{ fontSize: 'clamp(12px, 1vw, 18px)', bottom: '16.5%' }}
                     >
-                      $1.00
+                      ${scene4Content.priceChart.minimumBaseline.toFixed(2)}
                     </p>
 
                     <div className="absolute bottom-[2%] left-0 right-0 flex justify-around">
@@ -454,13 +441,13 @@ export function Scene4({ currentScene = 3, totalScenes = 8, enteredFoods = [], o
                         className="font-['Inter:Extra_Bold',sans-serif] font-extrabold text-[#47c6da]"
                         style={{ fontSize: 'clamp(16px, 1.45vw, 26px)' }}
                       >
-                        Current
+                        {scene4Content.priceChart.currentLabel}
                       </p>
                       <p
                         className="font-['Inter:Extra_Bold',sans-serif] font-extrabold text-[#47c6da]"
                         style={{ fontSize: 'clamp(16px, 1.45vw, 26px)' }}
                       >
-                        Projected
+                        {scene4Content.priceChart.projectedLabel}
                       </p>
                     </div>
                   </div>
@@ -477,22 +464,6 @@ export function Scene4({ currentScene = 3, totalScenes = 8, enteredFoods = [], o
         />
       </div>
 
-      <div
-        className="absolute flex gap-[0.5vw]"
-        style={{ bottom: '3vh', left: '50%', transform: 'translateX(-50%)', zIndex: 2 }}
-      >
-        {foodDataList.map((_, i) => (
-          <div
-            key={`dot-${i}`}
-            className="rounded-full transition-all duration-300"
-            style={{
-              width: 'clamp(8px, 0.7vw, 14px)',
-              height: 'clamp(8px, 0.7vw, 14px)',
-              backgroundColor: i === activeIndex ? '#ffffff' : 'rgba(255,255,255,0.4)',
-            }}
-          />
-        ))}
-      </div>
     </div>
   );
 }

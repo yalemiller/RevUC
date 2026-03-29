@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import imgReceipt1 from "../../assets/9c3dc63f059e5edf6e5cd9ea26c689682b0147c6.png";
 import { SceneProgressIndicator } from '../components/SceneProgressIndicator';
+import { appContent } from '../data/appContent';
 
 const OVERLAP_COMPLETE_PROGRESS = 5.02;
 const RECEIPT_ENTRY_START = 3.55;
@@ -90,7 +91,7 @@ export function Scene5({ currentScene = 4, totalScenes = 8, scrollProgress = 4 }
           transition: 'opacity 0.15s ease',
         }}
       >
-        Today these items cost
+        {appContent.scenes.scene5.headline}
       </p>
       
       {/* Price - fades based on scroll */}
@@ -107,7 +108,7 @@ export function Scene5({ currentScene = 4, totalScenes = 8, scrollProgress = 4 }
           transition: 'opacity 0.15s ease',
         }}
       >
-        $132.54
+        {appContent.scenes.scene5.totalPrice}
       </p>
 
       {/* Scene progress indicator */}

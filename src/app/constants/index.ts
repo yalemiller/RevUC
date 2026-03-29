@@ -3,11 +3,13 @@
  * Centralized location for all magic numbers, colors, and configuration
  */
 
+import { appContent } from '../data/appContent';
+
 // ============================================
 // SCENE CONFIGURATION
 // ============================================
 
-export const TOTAL_SCENES = 8;
+export const TOTAL_SCENES = 9;
 
 // ============================================
 // COLORS
@@ -74,11 +76,8 @@ export const SCENE_3_STEPS = [
 ] as const;
 
 export const SCENE_3_CONFIG = {
-  helperText: 'Try: eggs, toast, cereal',
-  completionText: {
-    line1: "You're all set!",
-    line2: 'Swipe down to continue',
-  },
+  helperText: appContent.scenes.scene3.helperText,
+  completionText: appContent.scenes.scene3.completionText,
   personPosition: {
     left: '1150px',  // Moved right from 900px to 1150px (250px right)
     top: '-1080px',  // Changed from -1150px to -1080px for seamless Scene 2→3 transition

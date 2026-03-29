@@ -15,9 +15,10 @@ import {
   Scene6,
   Scene7,
   Scene8,
+  Scene9,
 } from './scenes';
 
-const TOTAL_SCENES = 8;
+const TOTAL_SCENES = 9;
 
 export default function App() {
   const [currentSceneIndex, setCurrentSceneIndex] = useState(0);
@@ -104,7 +105,15 @@ export default function App() {
         </SceneWrapper>
         
         <SceneWrapper sceneNumber={8}>
-          <Scene8 currentScene={currentSceneIndex} totalScenes={TOTAL_SCENES} />
+          <Scene8 
+            currentScene={currentSceneIndex} 
+            totalScenes={TOTAL_SCENES}
+            enteredFoods={enteredFoods}
+          />
+        </SceneWrapper>
+
+        <SceneWrapper sceneNumber={9}>
+          <Scene9 currentScene={currentSceneIndex} totalScenes={TOTAL_SCENES} />
         </SceneWrapper>
       </ScrollContainer>
 

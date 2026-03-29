@@ -9,11 +9,6 @@ export const SceneProgressIndicator = memo(function SceneProgressIndicator({
   totalScenes, 
   currentScene 
 }: SceneProgressIndicatorProps) {
-  // Hide indicator on Scene 4 and beyond (currentScene >= 3)
-  if (currentScene >= 3) {
-    return null;
-  }
-
   return (
     <div 
       className="fixed left-[37px] top-[364px] bg-[#d2d2d2] rounded-[47px] z-50"

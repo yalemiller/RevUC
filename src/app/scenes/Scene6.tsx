@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import imgBag1 from "../../assets/161e525cc32e6c36fdb23b7da795dc9faee62f01.png";
 import { SceneProgressIndicator } from '../components/SceneProgressIndicator';
+import { appContent } from '../data/appContent';
 
 export function Scene6({ currentScene = 5, totalScenes = 8, scrollProgress = 5 }) {
   // Text opacity - smooth fade in/out based on scroll progress
@@ -60,7 +61,7 @@ export function Scene6({ currentScene = 5, totalScenes = 8, scrollProgress = 5 }
           transition: 'opacity 0.15s ease',
         }}
       >
-        In ten years, adjusted for inflation that could cost
+        {appContent.scenes.scene6.headline}
       </p>
       
       {/* Price (fades) */}
@@ -77,7 +78,7 @@ export function Scene6({ currentScene = 5, totalScenes = 8, scrollProgress = 5 }
           transition: 'opacity 0.15s ease',
         }}
       >
-        $250.54
+        {appContent.scenes.scene6.totalPrice}
       </p>
       
       {/* Increase text (fades) */}
@@ -94,7 +95,7 @@ export function Scene6({ currentScene = 5, totalScenes = 8, scrollProgress = 5 }
           transition: 'opacity 0.15s ease',
         }}
       >
-        125% increase
+        {appContent.scenes.scene6.increaseText}
       </p>
       
       {/* Bottom turquoise bar */}

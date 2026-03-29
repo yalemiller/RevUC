@@ -3,8 +3,11 @@ import { SceneProgressIndicator } from '../components/SceneProgressIndicator';
 import { headlineAnimation } from '../animations/variants';
 import { GradientBackground } from '../components/scene-elements';
 import { COLORS } from '../constants';
+import { appContent } from '../data/appContent';
 
 export function Scene2({ currentScene = 1, totalScenes = 8, skyGradient, enableGlobalGradient = false }) {
+  const [headlineLine1, headlineLine2] = appContent.scenes.scene2.headline;
+
   return (
     <div className="bg-white relative size-full" data-name="Scene 2">
       {enableGlobalGradient ? (
@@ -34,8 +37,8 @@ export function Scene2({ currentScene = 1, totalScenes = 8, skyGradient, enableG
           fontSize: 'clamp(24px, 3.4vw, 65px)',
         }}
       >
-        <p className="leading-[normal] mb-0">You are what you eat...</p>
-        <p className="leading-[normal]">But your food is changing</p>
+        <p className="leading-[normal] mb-0">{headlineLine1}</p>
+        <p className="leading-[normal]">{headlineLine2}</p>
       </motion.div>
       
       {/* Placeholder text */}
@@ -49,7 +52,7 @@ export function Scene2({ currentScene = 1, totalScenes = 8, skyGradient, enableG
           fontSize: 'clamp(18px, 2.1vw, 40px)',
         }}
       >
-        (Place Holder for text)
+        {appContent.scenes.scene2.body}
       </motion.p>
       
       {/* Scene progress indicator */}

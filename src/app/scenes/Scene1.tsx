@@ -4,6 +4,7 @@ import imgTitle1 from '../../assets/a16a85855a3bb3af39a3f72babdcda2905687e67.png
 import { bobbingAnimation } from '../animations/variants';
 import { GradientBackground } from '../components/scene-elements';
 import { COLORS } from '../constants';
+import { appContent } from '../data/appContent';
 
 export function Scene1({ skyGradient, enableGlobalGradient = false }) {
   return (
@@ -36,7 +37,7 @@ export function Scene1({ skyGradient, enableGlobalGradient = false }) {
         {...bobbingAnimation}
         className="-translate-x-1/2 absolute font-['Inter:Extra_Bold',sans-serif] font-extrabold h-[57px] leading-[normal] left-1/2 not-italic text-[40px] text-center text-white top-[820px] w-[736px]"
       >
-        SWIPE DOWN TO GET STARTED
+        {appContent.scenes.scene1.swipePrompt}
       </motion.p>
       
       {/* Down arrow with bobbing animation */}
