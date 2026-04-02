@@ -10,6 +10,21 @@ function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
 }
 
+
+
+function mean(values: number[]) {
+  if (values.length === 0) return 0;
+  return values.reduce((sum, value) => sum + value, 0) / values.length;
+}
+
+function standardDeviation(values: number[]) {
+  if (values.length === 0) return 0;
+  const avg = mean(values);
+  const variance =
+    values.reduce((sum, value) => sum + (value - avg) ** 2, 0) / values.length;
+  return Math.sqrt(variance);
+}
+
 function getScrollMetrics(container: HTMLDivElement) {
   const cards = container.querySelectorAll('[data-scroll-card]') as NodeListOf<HTMLDivElement>;
   const firstCard = cards[0];
@@ -68,6 +83,36 @@ export function Scene4({ currentScene = 3, totalScenes = 8, enteredFoods = [], o
       };
     });
   }, [enteredFoods, scene4Content.fallbackFood]);
+
+  const priceStats = useMemo(() => {
+    const values = foodDataList
+      .flatMap((food) => [food.cost?.currentAvg, food.cost?.predictedAvg])
+      .filter((value): value is number => typeof value === 'number' && Number.isFinite(value));
+
+    const safeValues = values.length > 0 ? values : [0];
+    const avg = mean(safeValues);
+    const stdDev = standardDeviation(safeValues);
+    const safeStdDev = stdDev > 0 ? stdDev : 1;
+    const maxDisplayValue = Math.max(avg + safeStdDev * 2, 1);
+
+    return {
+      mean: avg,
+      stdDev: safeStdDev,
+      minDisplayValue: 0,
+      maxDisplayValue,
+    };
+  }, [foodDataList]);
+
+  const getBarHeightPercent = (value: number) => {
+    const normalized = clamp(
+      (value - priceStats.minDisplayValue) /
+        (priceStats.maxDisplayValue - priceStats.minDisplayValue),
+      0,
+      1,
+    );
+
+    return normalized * 100;
+  };
 
   const emitActiveIndex = (newIndex: number, totalItems: number) => {
     if (newIndex < 0 || newIndex >= totalItems) return;
@@ -228,9 +273,11 @@ export function Scene4({ currentScene = 3, totalScenes = 8, enteredFoods = [], o
         `}</style>
 
         {foodDataList.map((food, index) => {
-          const maxPrice = Math.max(scene4Content.priceChart.maxScaleFloor, (food.cost?.predictedAvg || 50) * 1.2);
-          const currentBarHeight = ((food.cost?.currentAvg || 0) / maxPrice) * 54;
-          const projectedBarHeight = ((food.cost?.predictedAvg || 0) / maxPrice) * 54;
+          const currentValue = food.cost?.currentAvg || 0;
+          const projectedValue = food.cost?.predictedAvg || 0;
+          const currentBarHeight = getBarHeightPercent(currentValue);
+          const projectedBarHeight = getBarHeightPercent(projectedValue);
+          const barAnimationProgress = clamp(1 - Math.abs(index - scrollProgress), 0, 1);
           const stackDistance = clamp(index - scrollProgress, -2.5, 2.5);
           const depth = Math.abs(stackDistance);
           const cardScale = 1 - depth * 0.08;
@@ -384,7 +431,7 @@ export function Scene4({ currentScene = 3, totalScenes = 8, enteredFoods = [], o
                       className="absolute font-['Inter:Extra_Bold',sans-serif] font-extrabold text-[#d0d0d0]"
                       style={{ fontSize: 'clamp(12px, 1vw, 18px)', top: '-1.8vh' }}
                     >
-                      ${maxPrice.toFixed(2)}
+                      ${priceStats.maxDisplayValue.toFixed(2)}
                     </p>
 
                     <div
@@ -392,39 +439,53 @@ export function Scene4({ currentScene = 3, totalScenes = 8, enteredFoods = [], o
                       style={{ top: '13%', bottom: '17%' }}
                     >
                       <div className="flex items-end justify-center" style={{ width: '32%', height: '100%' }}>
-                        <div
-                          className="bg-[#47c6da] w-full rounded-t-[0.8vw] flex items-start justify-center"
+                        <motion.div
+                          className="bg-[#47c6da] w-full rounded-t-[0.8vw] flex items-start justify-center overflow-hidden"
+                          initial={{ height: '0%', opacity: 0.75 }}
+                          animate={{
+                            height: `${Math.max(currentBarHeight * barAnimationProgress, 0)}%`,
+                            opacity: 0.75 + barAnimationProgress * 0.25,
+                          }}
+                          transition={{ type: 'spring', stiffness: 180, damping: 24, mass: 0.8 }}
                           style={{
-                            height: `${currentBarHeight}%`,
-                            minHeight: '18px',
-                            paddingTop: '1vh',
+                            minHeight: barAnimationProgress > 0.08 && currentValue > 0 ? '18px' : '0px',
+                            paddingTop: barAnimationProgress > 0.08 && currentValue > 0 ? '1vh' : '0vh',
                           }}
                         >
-                          <p
+                          <motion.p
                             className="font-['Inter:Extra_Bold',sans-serif] font-extrabold text-[#f5f5f5]"
+                            animate={{ opacity: barAnimationProgress }}
+                            transition={{ duration: 0.18 }}
                             style={{ fontSize: 'clamp(12px, 1.05vw, 20px)' }}
                           >
                             ${food.cost?.currentAvg.toFixed(2)}
-                          </p>
-                        </div>
+                          </motion.p>
+                        </motion.div>
                       </div>
 
                       <div className="flex items-end justify-center" style={{ width: '32%', height: '100%' }}>
-                        <div
-                          className="bg-[#47c6da] w-full rounded-t-[0.8vw] flex items-start justify-center"
+                        <motion.div
+                          className="bg-[#47c6da] w-full rounded-t-[0.8vw] flex items-start justify-center overflow-hidden"
+                          initial={{ height: '0%', opacity: 0.75 }}
+                          animate={{
+                            height: `${Math.max(projectedBarHeight * barAnimationProgress, 0)}%`,
+                            opacity: 0.75 + barAnimationProgress * 0.25,
+                          }}
+                          transition={{ type: 'spring', stiffness: 180, damping: 24, mass: 0.8, delay: 0.04 }}
                           style={{
-                            height: `${projectedBarHeight}%`,
-                            minHeight: '18px',
-                            paddingTop: '1vh',
+                            minHeight: barAnimationProgress > 0.08 && projectedValue > 0 ? '18px' : '0px',
+                            paddingTop: barAnimationProgress > 0.08 && projectedValue > 0 ? '1vh' : '0vh',
                           }}
                         >
-                          <p
+                          <motion.p
                             className="font-['Inter:Extra_Bold',sans-serif] font-extrabold text-[#f5f5f5]"
+                            animate={{ opacity: barAnimationProgress }}
+                            transition={{ duration: 0.18, delay: 0.04 }}
                             style={{ fontSize: 'clamp(12px, 1.05vw, 20px)' }}
                           >
                             ${food.cost?.predictedAvg.toFixed(2)}
-                          </p>
-                        </div>
+                          </motion.p>
+                        </motion.div>
                       </div>
                     </div>
 
@@ -433,7 +494,7 @@ export function Scene4({ currentScene = 3, totalScenes = 8, enteredFoods = [], o
                       className="absolute font-['Inter:Extra_Bold',sans-serif] font-extrabold text-[#d0d0d0]"
                       style={{ fontSize: 'clamp(12px, 1vw, 18px)', bottom: '16.5%' }}
                     >
-                      ${scene4Content.priceChart.minimumBaseline.toFixed(2)}
+                      $0.00
                     </p>
 
                     <div className="absolute bottom-[2%] left-0 right-0 flex justify-around">

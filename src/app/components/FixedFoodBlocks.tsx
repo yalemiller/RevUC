@@ -29,14 +29,17 @@ const FOOD_BLOCKS_POSITION = {
 export function FixedFoodBlocks({ scrollProgress, foods = [], currentFoodIndex = -1 }) {
   // Visible from scene 3 through scene 6 only.
   const opacity = useMemo(() => {
-    // Don't show if no foods
-    if (foods.length === 0) return 0;
-    if (scrollProgress < 1.8) return 0;
-    if (scrollProgress < 2.1) return (scrollProgress - 1.8) / 0.3;
-    if (scrollProgress <= 5.8) return 1;
-    if (scrollProgress < 6.2) return 1 - (scrollProgress - 5.8) / 0.4;
-    return 0;
-  }, [scrollProgress, foods.length]);
+  if (foods.length === 0) return 0;
+
+  // Start fade-in a little earlier so Scene 3 begins fully visible
+  if (scrollProgress < 1.6) return 0;
+  if (scrollProgress < 2.0) return (scrollProgress - 1.6) / 0.4;
+
+  if (scrollProgress <= 5.8) return 1;
+  if (scrollProgress < 6.2) return 1 - (scrollProgress - 5.8) / 0.4;
+
+  return 0;
+}, [scrollProgress, foods.length]);
 
   // Scene 5 -> 6: collapse blocks into the bag opening area.
   const vacuumProgress = useMemo(() => {
