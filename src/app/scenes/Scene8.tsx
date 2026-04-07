@@ -113,7 +113,10 @@ function Scene8Panel({ food }: Scene8PanelProps) {
           {food.name}
         </p>
 
-        <p className="absolute font-['Inter:Extra_Bold',sans-serif] font-extrabold h-[60px] leading-[normal] left-[34px] not-italic text-[#f5f5f5] text-[44px] top-[178px] w-[760px]">
+        <p
+          className="absolute font-['Inter:Extra_Bold',sans-serif] font-extrabold h-[60px] leading-[normal] left-[34px] not-italic text-[#f5f5f5] text-[44px] top-[178px]"
+          style={{ width: 'calc(100% - 240px)' }}
+        >
           Vulnerability: {(food.riskLevel || 'moderate').toUpperCase()}
         </p>
 
@@ -129,27 +132,26 @@ function Scene8Panel({ food }: Scene8PanelProps) {
           {food.categories?.[0] || 'other'}
         </p>
 
-        <button
-          onClick={() => setViewMode((prev) => (prev === 'month' ? 'year' : 'month'))}
-          className="absolute h-[54px] left-[calc(100%-140px)] top-[214px] w-[108px] cursor-pointer z-20"
-        >
-          <div className="absolute inset-0 bg-[#D9D9D9] rounded-full" />
-          <div
-            className="absolute top-[9px] h-[36px] w-[37px] transition-all duration-200"
-            style={{ left: viewMode === 'month' ? '62px' : '9px' }}
-          >
-            <svg className="absolute block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 37 36">
-              <ellipse cx="18.5" cy="18" fill="#404C92" rx="18.5" ry="18" />
-            </svg>
-          </div>
-        </button>
+        <div className="absolute right-[28px] top-[182px] z-20 flex flex-col items-end gap-[7px] w-[122px]">
+          <p className="font-['Inter:Extra_Bold',sans-serif] font-extrabold leading-[normal] not-italic text-[24px] text-white whitespace-nowrap m-0">
+            {viewMode === 'month' ? 'By Year' : 'By Month'}
+          </p>
 
-        <p
-          className="absolute font-['Inter:Extra_Bold',sans-serif] font-extrabold leading-[normal] not-italic text-[25px] text-white top-[199px] whitespace-nowrap"
-          style={{ left: viewMode === 'month' ? 'calc(100% - 133px)' : 'calc(100% - 145px)' }}
-        >
-          {viewMode === 'month' ? 'By Year' : 'By Month'}
-        </p>
+          <button
+            onClick={() => setViewMode((prev) => (prev === 'month' ? 'year' : 'month'))}
+            className="relative h-[48px] w-[94px] cursor-pointer"
+          >
+            <div className="absolute inset-0 bg-[#D9D9D9] rounded-full" />
+            <div
+              className="absolute top-[7px] h-[34px] w-[34px] transition-all duration-200"
+              style={{ left: viewMode === 'month' ? '53px' : '7px' }}
+            >
+              <svg className="absolute block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 37 36">
+                <ellipse cx="18.5" cy="18" fill="#404C92" rx="18.5" ry="18" />
+              </svg>
+            </div>
+          </button>
+        </div>
 
         {viewMode === 'month' ? (
           <>
