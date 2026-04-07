@@ -18,6 +18,9 @@ export default defineConfig({
   },
 
   server: {
+    // Bind to IPv4 localhost to avoid Windows IPv6 ::1 permission issues.
+    host: '127.0.0.1',
+    port: 3440,
     allowedHosts: ['5326-2600-2b00-8747-c700-2947-73a8-7fa3-267b.ngrok-free.app'],
   },
 

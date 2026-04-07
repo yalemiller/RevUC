@@ -55,6 +55,12 @@ export function FixedFoodBlocks({ scrollProgress, foods = [], currentFoodIndex =
     return 1;
   }, [scrollProgress]);
 
+  const scrollAwayYVh = useMemo(() => {
+    // From Scene 6 onward, move with page scroll instead of sticking to viewport.
+    if (scrollProgress <= 5) return 0;
+    return -(scrollProgress - 5) * 100;
+  }, [scrollProgress]);
+
   // Stop rendering if no opacity or no foods.
   if (opacity <= 0 || foods.length === 0) return null;
 
@@ -69,7 +75,7 @@ export function FixedFoodBlocks({ scrollProgress, foods = [], currentFoodIndex =
         flexDirection: 'column',
         gap: `${FOOD_BLOCKS_POSITION.gapVh}vh`,
         opacity: opacity * transitionOpacity,
-        transform: `scale(${1 - vacuumProgress * 0.8})`,
+        transform: `translateY(${scrollAwayYVh}vh) scale(${1 - vacuumProgress * 0.8})`,
         transformOrigin: 'center center',
         zIndex: vacuumProgress > 0 && scrollProgress < 6 ? 5 : 10, // behind bag during vacuum (Scene 6), in front otherwise
         pointerEvents: 'none',

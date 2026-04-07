@@ -1,9 +1,12 @@
 import { SceneProgressIndicator } from '../components/SceneProgressIndicator';
+import { PersonSlice79 } from '../components/PersonSlice79';
 
 export function Scene7({ currentScene = 6, totalScenes = 9 }) {
   return (
-    <div className="bg-white relative size-full overflow-hidden" data-name="Scene 7">
+    <div className="bg-white relative size-full overflow-visible" data-name="Scene 7">
       <div className="absolute inset-0 bg-[#2ea3bd]" />
+
+      <PersonSlice79 slice="top" zIndex={3} />
 
       <p className="absolute font-['Inter:Regular',sans-serif] font-normal h-[411px] leading-[normal] left-[982px] not-italic text-[#fae850] text-[50px] top-[506px] w-[762px]">
         How are these foods affecting the environment?

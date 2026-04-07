@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'motion/react';
 import { SceneProgressIndicator } from '../components/SceneProgressIndicator';
+import { PersonSlice79 } from '../components/PersonSlice79';
 import { getFoodByName } from '../utils/foodValidation';
 
 
@@ -98,7 +99,7 @@ function Scene8Panel({ food }: Scene8PanelProps) {
 
   const impacts = food.lifecycleImpacts || DEFAULT_IMPACTS;
 
-  const maxBarWidth = 815;
+  const maxBarWidth = 760;
   const productionWidth = (impacts.productionPct / 100) * maxBarWidth;
   const transportWidth = (impacts.transportPct / 100) * maxBarWidth;
   const processingWidth = (impacts.processingPct / 100) * maxBarWidth;
@@ -106,13 +107,13 @@ function Scene8Panel({ food }: Scene8PanelProps) {
   const refrigerationWidth = (impacts.refrigerationPct / 100) * maxBarWidth;
 
   return (
-    <div className="relative w-full h-full flex items-start justify-start pt-[2.6vh] pl-[1.1vw]">
-      <div className="relative bg-[#404c92] h-[88vh] rounded-[30px] w-[47vw]">
+    <div className="relative w-full h-full flex items-start justify-start pt-[2.2vh] pl-[0.8vw]">
+      <div className="relative bg-[#404c92] h-[82vh] rounded-[30px] w-[42vw]">
         <p className="absolute font-['Inter:Extra_Bold',sans-serif] font-extrabold h-[133px] leading-[normal] left-[24px] not-italic text-[#f5f5f5] text-[100px] top-[22px] w-[750px]">
           {food.name}
         </p>
 
-        <p className="absolute font-['Inter:Extra_Bold',sans-serif] font-extrabold h-[60px] leading-[normal] left-[34px] not-italic text-[#f5f5f5] text-[50px] top-[200px] w-[760px]">
+        <p className="absolute font-['Inter:Extra_Bold',sans-serif] font-extrabold h-[60px] leading-[normal] left-[34px] not-italic text-[#f5f5f5] text-[44px] top-[178px] w-[760px]">
           Vulnerability: {(food.riskLevel || 'moderate').toUpperCase()}
         </p>
 
@@ -130,7 +131,7 @@ function Scene8Panel({ food }: Scene8PanelProps) {
 
         <button
           onClick={() => setViewMode((prev) => (prev === 'month' ? 'year' : 'month'))}
-          className="absolute h-[54px] left-[calc(100%-140px)] top-[238px] w-[108px] cursor-pointer z-20"
+          className="absolute h-[54px] left-[calc(100%-140px)] top-[214px] w-[108px] cursor-pointer z-20"
         >
           <div className="absolute inset-0 bg-[#D9D9D9] rounded-full" />
           <div
@@ -152,7 +153,7 @@ function Scene8Panel({ food }: Scene8PanelProps) {
 
         {viewMode === 'month' ? (
           <>
-            <p className="absolute font-['Inter:Extra_Bold',sans-serif] font-extrabold h-[29px] leading-[normal] left-[32px] not-italic text-[#f5f5f5] text-[25px] top-[298px] w-[409px]">
+            <p className="absolute font-['Inter:Extra_Bold',sans-serif] font-extrabold h-[29px] leading-[normal] left-[32px] not-italic text-[#f5f5f5] text-[25px] top-[252px] w-[409px]">
               % Emissions
             </p>
 
@@ -160,14 +161,14 @@ function Scene8Panel({ food }: Scene8PanelProps) {
               <p
                 key={month}
                 className="-translate-x-full absolute font-['Inter:Extra_Bold',sans-serif] font-extrabold leading-[normal] left-[83px] not-italic text-[#f5f5f5] text-[25px] text-right w-[56px]"
-                style={{ top: `${359 + idx * 45}px` }}
+                style={{ top: `${294 + idx * 32}px` }}
               >
                 {month}
               </p>
             ))}
 
             {Array.from({ length: 12 }).map((_, monthIdx) => {
-              const topPosition = 359 + monthIdx * 45;
+              const topPosition = 294 + monthIdx * 32;
               const currentLeft = 99;
 
               return (
@@ -181,7 +182,7 @@ function Scene8Panel({ food }: Scene8PanelProps) {
               );
             })}
 
-            <div className="absolute bg-[#f5f5f5] h-[5px] left-[34px] top-[337px] w-[calc(100%-68px)]" />
+            <div className="absolute bg-[#f5f5f5] h-[5px] left-[34px] top-[282px] w-[calc(100%-68px)]" />
           </>
         ) : (
           <>
@@ -224,7 +225,7 @@ function Scene8Panel({ food }: Scene8PanelProps) {
           </>
         )}
 
-        <p className="absolute font-['Inter:Extra_Bold',sans-serif] font-extrabold h-[49px] leading-[normal] left-[68px] not-italic text-[#f5f5f5] text-[40px] top-[875px] w-[780px]">
+        <p className="absolute font-['Inter:Extra_Bold',sans-serif] font-extrabold h-[49px] leading-[normal] left-[52px] not-italic text-[#f5f5f5] text-[34px] top-[700px] w-[780px]">
           Primary Threat: {food.primaryThreat || 'Market volatility'}
         </p>
       </div>
@@ -366,20 +367,26 @@ export function Scene8({ currentScene = 7, totalScenes = 9, enteredFoods = [] }:
   }, [foods.length]);
 
   return (
-    <div className="w-full h-screen relative overflow-hidden bg-[#2ea3bd]" data-name="Scene 8">
+    <div className="w-full h-screen relative overflow-visible bg-[#2ea3bd]" data-name="Scene 8">
+      <PersonSlice79
+        slice="middle"
+        foods={foods.map((food) => food.name)}
+        zIndex={8}
+      />
+
       <div
         ref={scrollContainerRef}
         data-scroll-cards
         className="absolute top-0 bottom-0 right-0 flex items-center overflow-x-auto"
         style={{
-          left: '43vw',
+          left: '45vw',
           scrollSnapType: 'x mandatory',
           scrollBehavior: 'smooth',
           scrollbarWidth: 'none',
           msOverflowStyle: 'none',
-          paddingLeft: '1.2vw',
-          paddingRight: '3vw',
-          gap: '1.6vw',
+          paddingLeft: '0.8vw',
+          paddingRight: '2.4vw',
+          gap: '1.2vw',
           zIndex: 20,
         }}
       >
@@ -410,9 +417,9 @@ export function Scene8({ currentScene = 7, totalScenes = 9, enteredFoods = [] }:
               className="flex-shrink-0"
               style={{
                 scrollSnapAlign: 'start',
-                width: '53vw',
-                height: '90vh',
-                padding: '0.7vw',
+                width: '48vw',
+                height: '84vh',
+                padding: '0.45vw',
                 position: 'relative',
                 zIndex: Math.round(100 - depth * 10),
               }}

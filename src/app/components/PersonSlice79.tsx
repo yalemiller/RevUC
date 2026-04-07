@@ -1,15 +1,15 @@
 import { useMemo } from 'react';
 import { motion } from 'motion/react';
-import imgChest1 from '../../assets/30a91495dceb6d7fc18038e42fb8026c7916a513.png';
 
-/**
- * ParallaxPerson79 - ONE person image as a fixed overlay spanning scenes 7-9.
- *
- * No parallax: the same image is split into 3 equal vertical slices.
- * - Scene 7: top third
- * - Scene 8: middle third
- * - Scene 9: bottom third
- */
+type SliceMode = 'top' | 'middle' | 'bottom';
+
+interface PersonSlice79Props {
+  slice: SliceMode;
+  foods?: string[];
+  currentFoodIndex?: number;
+  zIndex?: number;
+}
+
 const PERSON2_CONFIG = {
   widthVw: 44,
   leftVw: 2,
@@ -22,64 +22,29 @@ const BELLY_ANCHOR = {
   yPct: 0.43,
 };
 
-interface ParallaxPerson79Props {
-  scrollProgress: number;
-  foods?: string[];
-  currentFoodIndex?: number;
-}
+const SLICE_OFFSET: Record<SliceMode, number> = {
+  top: 0,
+  middle: -33.333333,
+  bottom: -66.666666,
+};
 
-export function ParallaxPerson79({ scrollProgress, foods = [], currentFoodIndex = -1 }: ParallaxPerson79Props) {
-  const segmentIndex = useMemo(() => {
-    if (scrollProgress < 7) return 0;
-    if (scrollProgress < 8) return 1;
-    return 2;
-  }, [scrollProgress]);
+const PERSON_IMAGE_SRC = '/src/assets/30a91495dceb6d7fc18038e42fb8026c7916a513.png';
 
-  const segmentBaseProgress = useMemo(() => {
-    if (segmentIndex === 0) return 6;
-    if (segmentIndex === 1) return 7;
-    return 8;
-  }, [segmentIndex]);
-
-  const pageAttachY = useMemo(() => {
-    // Make each slice move with its scene scroll instead of floating fixed on the viewport.
-    return -(scrollProgress - segmentBaseProgress) * 100;
-  }, [scrollProgress, segmentBaseProgress]);
-
-  const imageTranslateY = useMemo(() => {
-    // Each step shifts exactly one-third of the image height.
-    return `${-segmentIndex * 33.333333}%`;
-  }, [segmentIndex]);
-
-  const lateFoods = useMemo(() => {
-    if (foods.length > 0) return foods.slice(0, 4);
-    return ['salmon', 'almonds', 'turkey', 'coffee'];
-  }, [foods]);
-
-  const showFoods = useMemo(() => {
-    if (lateFoods.length === 0) return false;
-    // Food blocks are mounted in the stomach only for Scene 8 (middle third).
-    return scrollProgress >= 7 && scrollProgress < 8;
-  }, [scrollProgress, lateFoods.length]);
-
-  const opacity = useMemo(() => {
-    // Visible only during scenes 7-9
-    if (scrollProgress >= 6 && scrollProgress <= 9) return 1;
-    return 0;
-  }, [scrollProgress]);
+export function PersonSlice79({ slice, foods = [], currentFoodIndex = -1, zIndex = 4 }: PersonSlice79Props) {
+  const imageTranslateY = useMemo(() => `${SLICE_OFFSET[slice]}%`, [slice]);
+  const showFoods = slice === 'middle' && foods.length > 0;
 
   return (
     <div
       style={{
-        position: 'fixed',
+        position: 'absolute',
         inset: 0,
-        height: '100vh',
-        overflow: 'hidden',
-        zIndex: 2,
+        zIndex,
         pointerEvents: 'none',
+        overflow: 'hidden',
       }}
     >
-      <motion.div
+      <div
         style={{
           position: 'absolute',
           left: `${PERSON2_CONFIG.leftVw}vw`,
@@ -87,19 +52,16 @@ export function ParallaxPerson79({ scrollProgress, foods = [], currentFoodIndex 
           width: `${PERSON2_CONFIG.widthVw}vw`,
           height: '100vh',
           overflow: 'hidden',
-          opacity,
-          transform: `translateY(${pageAttachY}vh)`,
         }}
       >
         <img
-          src={imgChest1}
+          src={PERSON_IMAGE_SRC}
           alt="Person illustration"
           style={{
             width: '100%',
             height: 'auto',
             display: 'block',
             transform: `translateY(${imageTranslateY})`,
-            transition: 'transform 120ms linear',
             willChange: 'transform',
           }}
         />
@@ -118,18 +80,18 @@ export function ParallaxPerson79({ scrollProgress, foods = [], currentFoodIndex 
               pointerEvents: 'none',
             }}
           >
-            {lateFoods.map((food, index) => {
+            {foods.slice(0, 4).map((food, index) => {
               const isActive = currentFoodIndex === -1 ? true : index === currentFoodIndex;
               return (
                 <motion.div
-                  key={`person79-food-${food}-${index}`}
+                  key={`slice79-food-${food}-${index}`}
                   initial={{ opacity: 0, y: 10, scale: 0.94 }}
                   animate={{
                     opacity: isActive ? 1 : 0.56,
                     y: 0,
                     scale: isActive ? 1 : 0.95,
                   }}
-                  transition={{ duration: 0.28, ease: 'easeOut' }}
+                  transition={{ duration: 0.24, ease: 'easeOut' }}
                   style={{
                     backgroundColor: '#47c6da',
                     borderRadius: 'clamp(8px, 0.9vw, 16px)',
@@ -160,7 +122,7 @@ export function ParallaxPerson79({ scrollProgress, foods = [], currentFoodIndex 
             })}
           </div>
         ) : null}
-      </motion.div>
+      </div>
     </div>
   );
 }

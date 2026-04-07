@@ -49,7 +49,7 @@ export function Scene6({ currentScene = 5, totalScenes = 8, scrollProgress = 5 }
       
       {/* Main text - top (fades) */}
       <p 
-        className="fixed font-['Inter:Bold',sans-serif] font-bold leading-[normal] not-italic text-[#0f707f]"
+        className="absolute font-['Inter:Bold',sans-serif] font-bold leading-[normal] not-italic text-[#0f707f]"
         style={{
           left: '9.4vw',
           top: '20.7vh',
@@ -66,7 +66,7 @@ export function Scene6({ currentScene = 5, totalScenes = 8, scrollProgress = 5 }
       
       {/* Price (fades) */}
       <p 
-        className="fixed font-['Inter:Bold',sans-serif] font-bold leading-[normal] not-italic text-[#0f707f]"
+        className="absolute font-['Inter:Bold',sans-serif] font-bold leading-[normal] not-italic text-[#0f707f]"
         style={{
           left: '9.4vw',
           top: '35.7vh',
@@ -83,7 +83,7 @@ export function Scene6({ currentScene = 5, totalScenes = 8, scrollProgress = 5 }
       
       {/* Increase text (fades) */}
       <p 
-        className="fixed font-['Inter:Bold',sans-serif] font-bold leading-[normal] not-italic text-[#0f707f]"
+        className="absolute font-['Inter:Bold',sans-serif] font-bold leading-[normal] not-italic text-[#0f707f]"
         style={{
           left: '9.4vw',
           top: '58.6vh',
