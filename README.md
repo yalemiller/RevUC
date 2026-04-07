@@ -1,8 +1,4 @@
 
-  # FutureDigest (Copy) (Copy)
-
-  This is a code bundle for FutureDigest (Copy) (Copy). The original project is available at https://www.figma.com/design/plYmlTRi1soFiUK5cQEmS7/FutureDigest--Copy---Copy-.
-
   ## Running the code
 
   Run `npm i` to install the dependencies.
